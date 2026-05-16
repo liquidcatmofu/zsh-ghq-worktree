@@ -1,8 +1,8 @@
 日本語 | [English](README.md)
 
-# fish-ghq-worktree
+# zsh-ghq-worktree
 
-`ghq`・`fzf`・`git worktree` を統合し、マルチリポジトリ開発におけるコンテキストスイッチのコストを最小化する [Fisher](https://github.com/jorgebucaran/fisher) プラグインです。
+`ghq`・`fzf`・`git worktree` を統合し、マルチリポジトリ開発におけるコンテキストスイッチのコストを最小化する zsh プラグインです。
 
 ## 機能
 
@@ -16,7 +16,7 @@
 
 | ツール | 用途 |
 |--------|------|
-| [fish](https://fishshell.com) | シェル本体 |
+| [zsh](https://www.zsh.org) | シェル本体 |
 | [ghq](https://github.com/x-motemen/ghq) | リポジトリの集約管理 |
 | [fzf](https://github.com/junegunn/fzf) | インタラクティブフィルター |
 | [git](https://git-scm.com) | バージョン管理・worktree 操作 |
@@ -28,8 +28,21 @@
 
 ## インストール
 
-```fish
-fisher install liquidcatmofu/fish-ghq-worktree
+**zinit:**
+```zsh
+zinit light liquidcatmofu/zsh-ghq-worktree
+```
+
+**oh-my-zsh:**
+```zsh
+git clone https://github.com/liquidcatmofu/zsh-ghq-worktree \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-ghq-worktree
+# ~/.zshrc の plugins=() に zsh-ghq-worktree を追加
+```
+
+**手動:**
+```zsh
+source /path/to/zsh-ghq-worktree.plugin.zsh
 ```
 
 ## コマンド
@@ -92,10 +105,10 @@ gget [-h] [-c] [-o] [-a] [-e]
 gsearch [-h] <キーワード>
 ```
 
-## 略語（abbr）
+## エイリアス
 
-| 略語 | 展開先 |
-|------|--------|
+| エイリアス | コマンド |
+|-----------|---------|
 | `gwl` | `git worktree list` |
 | `gwr` | `git worktree remove` |
 | `gwp` | `git worktree prune` |

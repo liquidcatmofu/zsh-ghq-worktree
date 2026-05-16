@@ -1,8 +1,8 @@
 [日本語](README.ja.md) | English
 
-# fish-ghq-worktree
+# zsh-ghq-worktree
 
-A [Fisher](https://github.com/jorgebucaran/fisher) plugin for Fish shell that integrates `ghq`, `fzf`, and `git worktree` to minimize context-switching cost in multi-repository development.
+A zsh plugin that integrates `ghq`, `fzf`, and `git worktree` to minimize context-switching cost in multi-repository development.
 
 ## Features
 
@@ -16,7 +16,7 @@ A [Fisher](https://github.com/jorgebucaran/fisher) plugin for Fish shell that in
 
 | Tool | Purpose |
 |------|---------|
-| [fish](https://fishshell.com) | Shell |
+| [zsh](https://www.zsh.org) | Shell |
 | [ghq](https://github.com/x-motemen/ghq) | Repository management |
 | [fzf](https://github.com/junegunn/fzf) | Interactive filter |
 | [git](https://git-scm.com) | Version control / worktree |
@@ -28,8 +28,21 @@ A [Fisher](https://github.com/jorgebucaran/fisher) plugin for Fish shell that in
 
 ## Installation
 
-```fish
-fisher install liquidcatmofu/fish-ghq-worktree
+**zinit:**
+```zsh
+zinit light liquidcatmofu/zsh-ghq-worktree
+```
+
+**oh-my-zsh:**
+```zsh
+git clone https://github.com/liquidcatmofu/zsh-ghq-worktree \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-ghq-worktree
+# Add zsh-ghq-worktree to plugins=() in ~/.zshrc
+```
+
+**Manual:**
+```zsh
+source /path/to/zsh-ghq-worktree.plugin.zsh
 ```
 
 ## Commands
@@ -92,9 +105,9 @@ Searches all of GitHub by keyword using `gh search repos`, opens fzf to select a
 gsearch [-h] <query>
 ```
 
-## Abbreviations
+## Aliases
 
-| Abbreviation | Expands to |
+| Alias | Command |
 |---|---|
 | `gwl` | `git worktree list` |
 | `gwr` | `git worktree remove` |
