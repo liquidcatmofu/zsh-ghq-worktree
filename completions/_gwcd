@@ -1,0 +1,24 @@
+#compdef gwcd
+
+_gwcd() {
+    local -a branches
+    branches=(${(f)"$(git worktree list 2>/dev/null | awk '
+        {
+            path = $1
+            n = split(path, parts, "/")
+            dirname = parts[n]
+            m = split(dirname, subparts, "+")
+            if (m > 1) {
+                branch = subparts[2]
+                gsub("%", "/", branch)
+                print branch
+            } else if (NF >= 3) {
+                ref = $3
+                gsub(/[\[\]]/, "", ref)
+                print ref
+            }
+        }')"})
+    _describe 'worktree branch' branches
+}
+
+_gwcd "$@"
