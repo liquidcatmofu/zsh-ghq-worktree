@@ -28,6 +28,13 @@
 
 ## インストール
 
+**antidote:**
+
+`.zsh_plugins.txt` に追加:
+```
+liquidcatmofu/zsh-ghq-worktree
+```
+
 **zinit:**
 ```zsh
 zinit light liquidcatmofu/zsh-ghq-worktree

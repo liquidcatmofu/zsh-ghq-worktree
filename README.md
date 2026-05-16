@@ -28,6 +28,13 @@ A zsh plugin that integrates `ghq`, `fzf`, and `git worktree` to minimize contex
 
 ## Installation
 
+**antidote:**
+
+Add to your `.zsh_plugins.txt`:
+```
+liquidcatmofu/zsh-ghq-worktree
+```
+
 **zinit:**
 ```zsh
 zinit light liquidcatmofu/zsh-ghq-worktree
