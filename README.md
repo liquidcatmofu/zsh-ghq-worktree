@@ -26,6 +26,10 @@ A zsh plugin that integrates `ghq`, `fzf`, and `git worktree` to minimize contex
 | [jq](https://jqlang.github.io/jq/) | JSON parsing for GitHub API |
 | [Nerd Fonts](https://www.nerdfonts.com) | Icons in terminal |
 
+## Related
+
+- [fish-ghq-worktree](https://github.com/liquidcatmofu/fish-ghq-worktree) — fish version
+
 ## Installation
 
 **antidote:**
