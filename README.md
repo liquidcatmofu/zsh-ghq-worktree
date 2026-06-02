@@ -9,7 +9,10 @@ A zsh plugin that integrates `ghq`, `fzf`, and `git worktree` to minimize contex
 - **`gcd`** — Search and jump to any `ghq`-managed repository via fzf, with Nerd Font icons replacing domain names for compact display
 - **`gwcd`** — Switch between git worktrees of the current repository with color-coded fzf UI, or jump directly by branch name
 - **`gwa`** — Create a new git worktree, flattening `feature/login`-style branch names to `repo+feature%login` directories; select a branch via fzf if no argument is given
+- **`gwapr`** — Select an open pull request and create a worktree for its branch; fork PRs are handled automatically by adding the fork as a remote
+- **`gwrm`** — Interactively remove worktrees or repositories with safety checks for unpushed commits and uncommitted changes; uses `trash` for recoverable deletion
 - **`gget`** — Browse and clone your GitHub repositories (own / collaborator / org) via `ghq`, with per-type color coding
+- **`gcreate`** — Create a new GitHub repository with interactive options (visibility, license, .gitignore, etc.) and clone via `ghq`
 - **`gsearch`** — Search all of GitHub by keyword and clone the result via `ghq`
 
 ## Requirements
@@ -25,6 +28,7 @@ A zsh plugin that integrates `ghq`, `fzf`, and `git worktree` to minimize contex
 | [bat](https://github.com/sharkdp/bat) | README preview in fzf |
 | [jq](https://jqlang.github.io/jq/) | JSON parsing for GitHub API |
 | [Nerd Fonts](https://www.nerdfonts.com) | Icons in terminal |
+| trash *(optional)* | Safe deletion for `gwrm` — [`trash`](https://github.com/ali-rantakari/trash) on macOS, `gio` or [`trash-cli`](https://github.com/andreafrancia/trash-cli) on Linux |
 
 ## Related
 
@@ -87,6 +91,32 @@ Creates a new worktree for the given branch next to the current repository direc
 gwa [-h] [branch]
 ```
 
+### `gwapr` — Create a worktree from a pull request
+
+Lists open pull requests via `gh pr list`, opens fzf to select one, then creates a worktree for its branch. Remote-only branches are fetched and set up with tracking automatically. Fork PRs (cross-repository) are handled by adding the fork as a named remote.
+
+```
+gwapr [-h]
+```
+
+### `gwrm` — Remove a worktree or repository
+
+Opens fzf with all worktrees of the current repository and all `ghq`-managed repositories. Supports multi-select (TAB). Before removing, checks each item for uncommitted changes and unpushed commits. Uses `trash` for recoverable deletion instead of permanent removal.
+
+```
+gwrm [-h] [-f]
+```
+
+| Option | Description |
+|--------|-------------|
+| `-f`, `--force` | Skip safety checks and force removal |
+
+The trash command is resolved automatically (`trash` → `gio trash` → `trash-put`). Override by setting `$GHQ_WORKTREE_TRASH_CMD`:
+
+```zsh
+export GHQ_WORKTREE_TRASH_CMD='gio trash'
+```
+
 ### `gget` — Clone a GitHub repository
 
 Lists GitHub repositories accessible to you and clones the selected one via `ghq`. After cloning, prompts whether to `cd` into the new directory. Repositories are color-coded by type.
@@ -107,6 +137,27 @@ gget [-h] [-c] [-o] [-a] [-e]
 | Cyan | Your own repositories |
 | Yellow | Organization repositories |
 | Green | Collaborator repositories |
+
+### `gcreate` — Create a GitHub repository
+
+Creates a new GitHub repository with the given name (prompted if omitted), then clones it via `ghq`. Supports visibility, description, README, license, .gitignore, and more.
+
+```
+gcreate [-h] [-p] [-P] [-d <text>] [-r] [-l [id]] [-g [tmpl]]
+        [--disable-issues] [--disable-wiki] [-H <url>] [name]
+```
+
+| Option | Description |
+|--------|-------------|
+| `-p`, `--public` | Create a public repository |
+| `-P`, `--private` | Create a private repository (default) |
+| `-d`, `--description <text>` | Repository description |
+| `-r`, `--readme` | Add a README file |
+| `-l`, `--license [id]` | Add a license (opens fzf if id omitted); value must be adjacent: `-lMIT` or `--license=MIT` |
+| `-g`, `--gitignore [tmpl]` | Add a .gitignore (opens fzf if template omitted); value must be adjacent: `-gRust` or `--gitignore=Rust` |
+| `--disable-issues` | Disable issues |
+| `--disable-wiki` | Disable wiki |
+| `-H`, `--homepage <url>` | Repository homepage URL |
 
 ### `gsearch` — Search GitHub and clone
 

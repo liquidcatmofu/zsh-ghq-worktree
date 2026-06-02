@@ -9,7 +9,10 @@
 - **`gcd`** — `ghq` が管理する全リポジトリを fzf で検索してジャンプ。ドメイン名を Nerd Font アイコンに置換し、コンパクトに表示
 - **`gwcd`** — 現在のリポジトリのワークツリーをカラー表示の fzf で切り替え。ブランチ名を直接指定して fzf をスキップすることも可能
 - **`gwa`** — 新しいワークツリーを作成。`feature/login` のようなブランチ名を `repo+feature%login` にフラット化して管理しやすく。引数なしで fzf からブランチを選択
+- **`gwapr`** — オープンな PR を選択し、そのブランチを worktree として追加。フォークからの PR も自動でリモート登録して対応
+- **`gwrm`** — ワークツリー・リポジトリをインタラクティブに削除。未プッシュコミット・未コミット変更を確認し、`trash` で安全に（復元可能に）削除
 - **`gget`** — GitHub リポジトリ（自分・コラボレーター・org）を種別ごとに色分けして一覧表示し、`ghq` でクローン
+- **`gcreate`** — 新しい GitHub リポジトリをインタラクティブに作成（公開設定・ライセンス・.gitignore など）し、`ghq` でクローン
 - **`gsearch`** — キーワードで GitHub 全体を検索し、結果を `ghq` でクローン
 
 ## 必要なツール
@@ -25,6 +28,7 @@
 | [bat](https://github.com/sharkdp/bat) | fzf プレビュー内の README 表示 |
 | [jq](https://jqlang.github.io/jq/) | GitHub API のレスポンス解析 |
 | [Nerd Fonts](https://www.nerdfonts.com) | ターミナル上のアイコン表示 |
+| trash *（任意）* | `gwrm` での安全な削除 — macOS は [`trash`](https://github.com/ali-rantakari/trash)、Linux は `gio` または [`trash-cli`](https://github.com/andreafrancia/trash-cli) |
 
 ## 関連
 
@@ -87,6 +91,32 @@ gwcd [-h] [ブランチ名]
 gwa [-h] [ブランチ名]
 ```
 
+### `gwapr` — PR から worktree を作成
+
+`gh pr list` でオープンな PR を一覧表示し、fzf で選択したブランチの worktree を作成します。ローカルに存在しないリモートブランチも自動でフェッチしてトラッキング設定を行います。フォークからの PR（クロスリポジトリ）にも対応しており、フォーク元を自動でリモートとして登録します。
+
+```
+gwapr [-h]
+```
+
+### `gwrm` — worktree・リポジトリを削除
+
+カレントリポジトリの worktree と `ghq` 管理下のリポジトリを fzf で一覧表示し、削除対象を選択します（TAB で複数選択可）。削除前に未コミット変更・未プッシュコミットを確認し、問題があればスキップして警告を表示します。`trash` コマンドでゴミ箱に移動するため、誤って削除しても復元できます。
+
+```
+gwrm [-h] [-f]
+```
+
+| オプション | 説明 |
+|-----------|------|
+| `-f`, `--force` | 安全確認をスキップして強制削除 |
+
+trash コマンドは自動検出されます（`trash` → `gio trash` → `trash-put` の優先順）。`$GHQ_WORKTREE_TRASH_CMD` で上書き可能です：
+
+```zsh
+export GHQ_WORKTREE_TRASH_CMD='gio trash'
+```
+
 ### `gget` — GitHub リポジトリをクローン
 
 アクセス可能な GitHub リポジトリを一覧表示し、選択したものを `ghq` でクローンします。クローン後に `cd` するか確認プロンプトを表示します。リポジトリは種別ごとに色分けされます。
@@ -107,6 +137,27 @@ gget [-h] [-c] [-o] [-a] [-e]
 | シアン | 自分が owner のリポジトリ |
 | イエロー | org のリポジトリ |
 | グリーン | コラボレーターのリポジトリ |
+
+### `gcreate` — GitHub リポジトリを作成
+
+リポジトリ名（省略時はプロンプトで入力）で新しい GitHub リポジトリを作成し、`ghq` でクローンします。公開設定・説明・README・ライセンス・.gitignore などのオプションに対応しています。
+
+```
+gcreate [-h] [-p] [-P] [-d <text>] [-r] [-l [id]] [-g [tmpl]]
+        [--disable-issues] [--disable-wiki] [-H <url>] [name]
+```
+
+| オプション | 説明 |
+|-----------|------|
+| `-p`, `--public` | パブリックリポジトリとして作成 |
+| `-P`, `--private` | プライベートリポジトリとして作成（デフォルト） |
+| `-d`, `--description <text>` | リポジトリの説明 |
+| `-r`, `--readme` | README ファイルを追加 |
+| `-l`, `--license [id]` | ライセンスを追加（id省略時はfzfで選択）。値は隣接指定が必要: `-lMIT` または `--license=MIT` |
+| `-g`, `--gitignore [tmpl]` | .gitignore を追加（テンプレート省略時はfzfで選択）。値は隣接指定が必要: `-gRust` または `--gitignore=Rust` |
+| `--disable-issues` | Issue を無効化 |
+| `--disable-wiki` | Wiki を無効化 |
+| `-H`, `--homepage <url>` | リポジトリのホームページ URL |
 
 ### `gsearch` — GitHub を検索してクローン
 

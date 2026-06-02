@@ -1,20 +1,14 @@
 function gget() {
-    local _help=0 _collaborator=0 _org=0 _all=0 _exclude_owner=0
+    local -a _help=() _collaborator=() _org=() _all=() _exclude_owner=()
+    zparseopts -D -E \
+        h=_help    -help=_help \
+        c=_collaborator  -collaborator=_collaborator \
+        o=_org     -org=_org \
+        a=_all     -all=_all \
+        e=_exclude_owner -exclude-owner=_exclude_owner \
+        || { echo "gget: invalid option" >&2; return 1 }
 
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-            -h|--help)          _help=1; shift ;;
-            -c|--collaborator)  _collaborator=1; shift ;;
-            -o|--org)           _org=1; shift ;;
-            -a|--all)           _all=1; shift ;;
-            -e|--exclude-owner) _exclude_owner=1; shift ;;
-            --) shift; break ;;
-            -*) echo "gget: unknown option: $1" >&2; return 1 ;;
-            *) break ;;
-        esac
-    done
-
-    if [[ $_help -eq 1 ]]; then
+    if (( ${#_help} )); then
         echo "Usage: gget [options]"
         echo ""
         echo "Search GitHub repositories and clone via ghq."
@@ -29,12 +23,12 @@ function gget() {
     fi
 
     local -a affiliations=()
-    [[ $_exclude_owner -eq 0 ]] && affiliations+=(owner)
-    if [[ $_all -eq 1 ]]; then
+    (( !${#_exclude_owner} )) && affiliations+=(owner)
+    if (( ${#_all} )); then
         affiliations+=(collaborator organization_member)
     else
-        [[ $_collaborator -eq 1 ]] && affiliations+=(collaborator)
-        [[ $_org -eq 1 ]]          && affiliations+=(organization_member)
+        (( ${#_collaborator} )) && affiliations+=(collaborator)
+        (( ${#_org} ))          && affiliations+=(organization_member)
     fi
 
     if [[ ${#affiliations[@]} -eq 0 ]]; then
@@ -53,10 +47,10 @@ function gget() {
     repo=$(gh api --paginate "/user/repos?affiliation=${affiliation}&per_page=100" \
         | jq -r --arg user "$current_user" \
             '.[] | if .owner.type == "Organization"
-                   then "[33m" + .full_name + "[0m"
+                   then "[33m" + .full_name + "[0m"
                    elif .owner.login == $user
-                   then "[36m" + .full_name + "[0m"
-                   else "[32m" + .full_name + "[0m"
+                   then "[36m" + .full_name + "[0m"
+                   else "[32m" + .full_name + "[0m"
                    end + " │ " + .full_name' \
         | fzf --ansi --reverse --height 60% \
             --delimiter ' │ ' --with-nth 1 \
